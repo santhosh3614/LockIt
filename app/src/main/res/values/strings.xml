@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">LockIt</string>
+    <string name="action_settings">Settings</string>
+    <string name="no_apps_available_label">No Apps Available</string>
+    <string name="search_app">Search App</string>
+    <string name="enable_locks_label">Enable Lock</string>
+    <string name="applock">AppLock</string>
+    <string name="settings_label">Settings</string>
+    <string name="photovault">Photo Vault</string>
+    <string name="videovault">Video Vault</string>
+    <string name="settings">Settings</string>
+</resources>

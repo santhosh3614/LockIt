@@ -1,0 +1,79 @@
+<!-- A DrawerLayout is intended to be used as the top-level content view using match_parent for both width and height to consume the full space available. -->
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.smatminds.applock.MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:background="@color/colorPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize" />
+
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_below="@id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="start">
+
+        <fragment
+            android:id="@+id/drawer_frag"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/lay_bottom"
+            class="com.smartminds.lockit.NavigationDrawerFragment"
+            android:name="com.smartminds.lockit.NavigationDrawerFragment" />
+
+        <LinearLayout
+            android:id="@+id/lay_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true">
+
+            <ImageButton
+                android:id="@+id/like_btn"
+                android:src="@android:drawable/star_big_off"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent" />
+
+            <ImageButton
+                android:id="@+id/share_btn"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:src="@android:drawable/ic_menu_share"
+                android:layout_height="match_parent" />
+
+            <ImageButton
+                android:id="@+id/feed_btn"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:src="@android:drawable/ic_media_ff"
+                android:layout_height="match_parent" />
+
+            <ImageButton
+                android:id="@+id/help_btn"
+                android:src="@android:drawable/ic_menu_help"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</android.support.v4.widget.DrawerLayout>

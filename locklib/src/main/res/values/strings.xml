@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">AppLockLib</string>
+    <string name="white">White</string>
+    <string name="black">Black</string>
+    <string name="solid_white">Solid White</string>
+    <string name="locked_apps_header_title">Locked Apps</string>
+    <string name="unlocked_apps_header_title">UnLocked Apps</string>
+    <string name="system_app">System App</string>
+    <string name="thirdparty_app">Third Party App</string>
+    <string name="install_uninstall_label">Install/Uninstall</string>
+    <string name="install_uninstall_desc">Prevent installing or uninstalling application</string>
+    <string name="recenttasklock_label">Recent Task</string>
+    <string name="recenttasklock_desc">Prevent uninstalling or force-stop application</string>
+    <string name="taskmanager_label">Task manager</string>
+    <string name="incoming_label">Incoming call</string>
+    <string name="taskmanager_desc">Prevent uninstalling or force-stop application</string>
+    <string name="incoming_desc">Prevent others from taking incoming calls</string>
+    <string name="settings_lock_desc">Prevent uninstalling or force-stop application</string>
+    <string name="playstore_lock_desc">Prevent installing or uninstalling application</string>
+    <string name="wifi_label">Wifi</string>
+    <string name="bluetooth_label">Bluetooth</string>
+    <string name="mobiledata_label">Mobile Data</string>
+    <string name="auto_sync_label">Auto Sync</string>
+    <string name="app_lock_label">AppLock</string>
+    <string name="additional_lock_label">Additional Locks</string>
+    <string name="advanced_lock_label">Advanced Locks</string>
+</resources>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="app_base">#1c000000</color>
+    <color name="forgot_pwd_text_focus">#ffffcaae</color>
+    <!-- colorPrimary is used, for instance, for the default ActionBar
+       (but not Toolbar) background.
+        We specify the same color for the toolbar background in
+        toolbar.xml.. -->
+    <color name="colorPrimary">#ff940094</color>
+
+    <!-- colorPrimaryDark is used for the status bar (with the
+         battery, clock, etc). -->
+    <color name="colorPrimaryDark">#ff520052</color>
+
+    <!-- colorAccent is used as the default value for
+         colorControlActivated which is used to tint widgets. -->
+    <color name="colorAccent">#ffdd00dd</color>
+    <color name="lock_pattern_view_regular_color">#ffdd60c8</color>
+    <color name="lock_pattern_view_error_color">#ffdd1e1b</color>
+    <color name="lock_pattern_view_success_color">#ffafdd9c</color>
+</resources>
