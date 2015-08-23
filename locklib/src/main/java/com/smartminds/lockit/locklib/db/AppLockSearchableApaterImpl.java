@@ -1,6 +1,6 @@
 package com.smartminds.lockit.locklib.db;
 
-import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +13,7 @@ import com.smartminds.lockit.locklib.LockAppListProvider;
 import com.smartminds.lockit.locklib.R;
 import com.smartminds.lockit.locklib.UserProfile;
 import com.smartminds.lockit.locklib.common.lockscreen.AppLockSearchableAdapter;
+import com.smartminds.lockit.locklib.common.lockscreen.Filters;
 import com.smartminds.lockit.locklib.common.lockscreen.ViewProvider;
 import com.smartminds.lockit.locklib.others.MultiHeaderAdapter;
 
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by android on 23/3/15.
@@ -43,17 +45,17 @@ class AppLockSearchableApaterImpl extends MultiHeaderAdapter<BasicLockInfo> impl
 
     private ViewProvider<BasicLockInfo> viewProvider;
     private UserProfile userProfile;
-    private LockAppListProvider.Filter filter;
-    private LockAppListProvider.SortOrder sortOrder;
+    private Filters.Filter filter;
+    private Filters.SortOrder sortOrder;
     private LockAppListProviderImpl.LockComparator lockComparator;
 
 
     AppLockSearchableApaterImpl(UserProfile userProfile,
-                                LockAppListProvider.Filter filter, LockAppListProvider.SortOrder sortOrder) {
+                                Filters.Filter filter, Filters.SortOrder sortOrder) {
         this.sortOrder = sortOrder;
-        apps.put(0, new ArrayList<BasicLockInfo>());
-        apps.put(1, new ArrayList<BasicLockInfo>());
-        apps.put(2, new ArrayList<BasicLockInfo>());
+        apps.put(0, new CopyOnWriteArrayList<BasicLockInfo>());
+        apps.put(1, new CopyOnWriteArrayList<BasicLockInfo>());
+        apps.put(2, new CopyOnWriteArrayList<BasicLockInfo>());
         lockComparator = new LockAppListProviderImpl.LockComparator(sortOrder);
         appListProvider = AppLockLib.getInstance().getAppListProvider();
         setUserProfile(userProfile, filter);
@@ -61,13 +63,16 @@ class AppLockSearchableApaterImpl extends MultiHeaderAdapter<BasicLockInfo> impl
         initSearchApps();
     }
 
-    public void setUserProfile(UserProfile userProfile, LockAppListProvider.Filter filter) {
+    public void setUserProfile(UserProfile userProfile, Filters.Filter filter) {
         this.userProfile = userProfile;
+        this.filter = filter;
         AdvancedAppLock advancedLock = appListProvider.getAdvancedLock(userProfile);
         BasicLockInfo[] appListInfo = appListProvider.getAppListInfo(userProfile, filter, sortOrder);
-        totAppInfos = Arrays.asList(appListInfo);
-        totAppInfos.remove(advancedLock.getAdvancedLock().getBasicLockInfo(AdvancedAppLock.Type.SETTINGS));
-        totAppInfos.remove(advancedLock.getAdvancedLock().getBasicLockInfo(AdvancedAppLock.Type.PLAYSTORE));
+        totAppInfos = new ArrayList<>(Arrays.asList(appListInfo));
+//        totAppInfos.remove(advancedLock.getAdvancedLock().getBasicLockInfo(
+//                AdvancedAppLock.AdvancedLocks.Type.SETTINGS));
+//        totAppInfos.remove(advancedLock.getAdvancedLock().getBasicLockInfo(
+//                AdvancedAppLock.AdvancedLocks.Type.PLAYSTORE));
         Collections.sort(totAppInfos, lockComparator);
         advancedApptotAppinfos = advancedLock.getAdvancedLock().getBasicLocks();
         Collections.sort(advancedApptotAppinfos, lockComparator);
@@ -107,7 +112,7 @@ class AppLockSearchableApaterImpl extends MultiHeaderAdapter<BasicLockInfo> impl
 
     @Override
     public void bindNormalView(BasicLockInfo basicLockInfo, View convertView, ViewGroup parent) {
-        viewProvider.fillChildView(convertView, basicLockInfo);
+        viewProvider.fillChildView(convertView, basicLockInfo,constraint);
     }
 
     @Override
@@ -118,32 +123,34 @@ class AppLockSearchableApaterImpl extends MultiHeaderAdapter<BasicLockInfo> impl
     @Override
     public void lockApp(BasicLockInfo basicLockInfo, boolean locked) {
         if (basicLockInfo instanceof LockAppInfoImpl) {
-            LockAppInfo lockAppInfo = (LockAppInfo) basicLockInfo;
-            String pkgName = lockAppInfo.getPackageName();
-            List<BasicLockInfo> basicLockInfos = tmpApps[2];
-            for (BasicLockInfo basicLockAppInfo : basicLockInfos) {
-                if (pkgName.equals(lockAppInfo.getPackageName())) {
-                    appListProvider.lockApp(lockAppInfo, locked, userProfile);
+            String pkgName = ((LockAppInfo) basicLockInfo).getPackageName();
+            List<BasicLockInfo> allApps = tmpApps[2];
+            int appCounts = 0;
+            for (int i = allApps.size()-1; i >= 0; i--) {
+                BasicLockInfo basicLockAppInfo = allApps.get(i);
+                if (pkgName.equals(((LockAppInfo) basicLockAppInfo).getPackageName())) {
+                    appCounts++;
+                    appListProvider.lockApp(basicLockAppInfo, locked, userProfile);
                     basicLockAppInfo.setLock(locked);
-                    if ((filter == LockAppListProvider.Filter.LOCKED && !locked) ||
-                            (filter == LockAppListProvider.Filter.UNLOCKED && locked)){
+                    if ((filter == Filters.Filter.LOCKED && !locked) ||
+                            (filter == Filters.Filter.UNLOCKED && locked)) {
                         apps.get(2).remove(basicLockAppInfo);
-                        basicLockInfos.remove(basicLockAppInfo);
+                        tmpApps[2].remove(basicLockAppInfo);
                     }
                 }
             }
-        } else if (basicLockInfo instanceof BasicLockInfoImpl) {
-            appListProvider.lockApp(basicLockInfo, locked, userProfile);
-            basicLockInfo.setLock(locked);
-            if ((filter == LockAppListProvider.Filter.LOCKED && !locked) ||
-                    (filter == LockAppListProvider.Filter.UNLOCKED && locked)){
-                for (int i = 0; i < 2; i++) {
-                    apps.get(i).remove(basicLockInfo);
-                    tmpApps[i].remove(basicLockInfo);
-                }
+            if ((filter == Filters.Filter.ALL && appCounts > 1) || filter != Filters.Filter.ALL)
+                notifyDataSetChanged();
+        } else {
+            int index = basicLockInfo instanceof AdvancedAppLock.AdvancedLocks.AdvancedAppBasicLock ? 1 : 2;
+            if ((filter == Filters.Filter.LOCKED && !locked) ||
+                    (filter == Filters.Filter.UNLOCKED && locked)) {
+                apps.get(index).remove(basicLockInfo);
+                tmpApps[index].remove(basicLockInfo);
             }
+            basicLockInfo.setLock(locked);
+            appListProvider.lockApp(basicLockInfo, locked, userProfile);
         }
-        notifyDataSetChanged();
     }
 
     @Override
@@ -152,20 +159,31 @@ class AppLockSearchableApaterImpl extends MultiHeaderAdapter<BasicLockInfo> impl
     }
 
     @Override
+    public void setSortOrder(Filters.SortOrder sortOrder) {
+        this.sortOrder = sortOrder;
+        initSearchApps();
+    }
+
+    @Override
+    public Filters.SortOrder getSortOrder() {
+        return sortOrder;
+    }
+
+    @Override
     public android.widget.Filter getFilter() {
         return new SearchFilter();
     }
 
-    public void setFilter(LockAppListProvider.Filter filter) {
+    public void setFilter(Filters.Filter filter) {
         this.filter = filter;
-        if (filter == LockAppListProvider.Filter.ALL) {
-            tmpApps[0] = new ArrayList<>(advancedApptotAppinfos);
-            tmpApps[1] = new ArrayList<>(advancedSwitchtotAppinfos);
-            tmpApps[2] = new ArrayList<>(totAppInfos);
+        if (filter == Filters.Filter.ALL) {
+            tmpApps[0] = new CopyOnWriteArrayList<>(advancedApptotAppinfos);
+            tmpApps[1] = new CopyOnWriteArrayList<>(advancedSwitchtotAppinfos);
+            tmpApps[2] = new CopyOnWriteArrayList<>(totAppInfos);
         } else {
-            tmpApps[0] = getAppInfos(advancedApptotAppinfos, filter == LockAppListProvider.Filter.LOCKED);
-            tmpApps[1] = getAppInfos(advancedSwitchtotAppinfos, filter == LockAppListProvider.Filter.LOCKED);
-            tmpApps[2] = getAppInfos(totAppInfos, filter == LockAppListProvider.Filter.LOCKED);
+            tmpApps[0] = getAppInfos(advancedApptotAppinfos, filter == Filters.Filter.LOCKED);
+            tmpApps[1] = getAppInfos(advancedSwitchtotAppinfos, filter == Filters.Filter.LOCKED);
+            tmpApps[2] = getAppInfos(totAppInfos, filter == Filters.Filter.LOCKED);
         }
         initSearchApps();
     }
@@ -178,13 +196,14 @@ class AppLockSearchableApaterImpl extends MultiHeaderAdapter<BasicLockInfo> impl
         notifyDataSetChanged();
     }
 
-    public void setSortOrder(LockAppListProvider.SortOrder sortOrder) {
-        this.sortOrder = sortOrder;
-        initSearchApps();
+    @Override
+    public Filters.Filter getAppLockFilter() {
+        return filter;
     }
 
-    public LockAppListProvider.SortOrder getSortOrder() {
-        return sortOrder;
+    @Override
+    public void setAppLockFilter(Filters.Filter filter) {
+        setFilter(filter);
     }
 
     class SearchFilter extends android.widget.Filter {
@@ -194,7 +213,7 @@ class AppLockSearchableApaterImpl extends MultiHeaderAdapter<BasicLockInfo> impl
             for (int i = 0; i < 3; i++) {
                 List<BasicLockInfo> basicLockInfosList = new ArrayList(tmpApps[i]);
                 Collections.sort(basicLockInfosList, lockComparator);
-                basicLockInfos[i] = getSortedApps(basicLockInfosList, constraint);
+                basicLockInfos[i] = getSortedApps(basicLockInfosList, searchSeq.toString().toLowerCase());
             }
             FilterResults filterResults = new FilterResults();
             filterResults.count = basicLockInfos.length;
@@ -218,15 +237,12 @@ class AppLockSearchableApaterImpl extends MultiHeaderAdapter<BasicLockInfo> impl
     private List<BasicLockInfo> getSortedApps(List<BasicLockInfo> appInfos, String query) {
         List<BasicLockInfo> lockAppInfos = new ArrayList<>(appInfos);
         List<BasicLockInfo> sortedApps = new ArrayList<>();
-        if (!TextUtils.isEmpty(query)) {
-            for (BasicLockInfo lockAppInfo : lockAppInfos) {
-                if (lockAppInfo.getLabel().toLowerCase().startsWith(query)) {
-                    sortedApps.add(lockAppInfo);
-                }
+        for (BasicLockInfo lockAppInfo : lockAppInfos) {
+            if (lockAppInfo.getLabel().toLowerCase().startsWith(query) ||
+                    lockAppInfo.getLabel().toLowerCase().contains(query)) {
+                sortedApps.add(lockAppInfo);
             }
-            lockAppInfos.removeAll(sortedApps);
         }
-        sortedApps.addAll(lockAppInfos);
         return sortedApps;
     }
 }

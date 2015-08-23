@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="NumberButton">
+        <item name="android:textSize">38.0sp</item>
+        <item name="android:typeface">serif</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">#ddffffff</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/numbers_selector</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:shadowRadius">2.0</item>
+    </style>
+</resources>

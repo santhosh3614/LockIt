@@ -8,5 +8,27 @@
     <string name="settings_label">Settings</string>
     <string name="photovault">Photo Vault</string>
     <string name="videovault">Video Vault</string>
-    <string name="settings">Settings</string>
+    <string name="feedback_label">Feedback</string>
+    <string name="share_label">Share</string>
+    <string name="background_theme_label">Background Theme</string>
+    <string name="user_profiles_label">UserProfile</string>
+    <string name="change_email_label">Change Email</string>
+    <string name="locktype_label">LockType</string>
+    <string name="prevent_install_uninstall_app">Prevent Install and UnInstall Apps</string>
+    <string name="set_as_device_admin">Set as device admin</string>
+    <string name="device_admin_uninstall_label">LockIt can not be uninstalled when Device Administrator is enabled</string>
+    <string name="enter_email">Enter EmailId</string>
+    <string name="gmail_updated_succesfully">EmailId changed Succesfully</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="min_one_profile_nedded">Cannot perform operation</string>
+    <string name="add_userProfile">Add UserProfile</string>
+    <string name="save">Save</string>
+    <string name="add_new_profile">Add New Profile</string>
+    <string name="enter_profile_name">Enter Profile Name</string>
+    <string name="invalid_profile_name">Invalid Profile Name</string>
+    <string name="title_activity_lock_registration">LockRegistrationActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+
 </resources>

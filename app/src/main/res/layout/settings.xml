@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:divider="@android:drawable/divider_horizontal_textfield"
+    android:showDividers="middle|end"
+    android:layout_height="match_parent"
+    tools:context=".SettingActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        layout="@layout/toolbar"/>
+
+    <TextView
+        android:id="@+id/locktype_txtview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+        android:text="@string/locktype_label" />
+
+    <TextView
+        android:id="@+id/change_email_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+        android:text="@string/change_email_label" />
+
+    <TextView
+        android:id="@+id/user_profile_txtview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+        android:text="@string/user_profiles_label" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/device_admin_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/set_as_device_admin"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+            android:textColor="@android:color/black"
+            android:layout_alignParentLeft="true" />
+
+        <TextView
+            android:layout_below="@id/device_admin_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
+            android:layout_alignParentLeft="true"
+            android:text="@string/device_admin_uninstall_label"
+            android:layout_toLeftOf="@+id/deviceadmin_checkbox" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:checked="false"
+            android:id="@+id/deviceadmin_checkbox" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/bg_theme_txtview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+        android:text="@string/background_theme_label" />
+
+    <TextView
+        android:id="@+id/feedback_txtview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+        android:text="@string/feedback_label" />
+
+    <TextView
+        android:id="@+id/share_txtview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+        android:text="@string/share_label" />
+
+
+</LinearLayout>

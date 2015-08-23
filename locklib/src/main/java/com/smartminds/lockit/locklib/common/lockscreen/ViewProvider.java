@@ -13,6 +13,6 @@ public interface ViewProvider<T> {
 
     void fillHeaderView(View view, String comment);
 
-    void fillChildView(View view, T t);
+    void fillChildView(View view, T t,String searchString);
 
 }

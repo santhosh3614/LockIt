@@ -1,17 +1,14 @@
 package com.smartminds.lockit.locklib.common.lockscreen.background;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
-import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.appsforbb.common.appbase.AppBase;
 import com.smartminds.lockit.locklib.AppLockLib;
 import com.smartminds.lockit.locklib.BackgroundThemeProvider;
 import com.smartminds.lockit.locklib.LockItSettings;
 import com.smartminds.lockit.locklib.db.Db;
-import com.smartminds.lockit.locklib.services.AppLockService;
+import com.smartminds.lockit.locklib.others.LockLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,6 +17,9 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+
+import static android.content.Context.MODE_PRIVATE;
+import static com.smartminds.lockit.locklib.LockItSettings.BG_THEME_ID;
 
 /**
  * Created by santhoshkumar on 8/5/15.
@@ -55,7 +55,7 @@ public class BackgroundThemeProviderImpl implements BackgroundThemeProvider {
     public BackgroundTheme getSelectedBackgroundTheme() {
         Db db = Db.getInstance();
         BackgroundThemeTable bgThemeTable = db.getBgThemeTable();
-        return bgThemeTable.getBackgroundTheme(settings.getLong(LockItSettings.BG_THEME_ID, 1));
+        return bgThemeTable.getBackgroundTheme(settings.getLong(BG_THEME_ID, 1));
     }
 
     @Override
@@ -63,7 +63,7 @@ public class BackgroundThemeProviderImpl implements BackgroundThemeProvider {
         Db db = Db.getInstance();
         BackgroundThemeTable bgThemeTable = db.getBgThemeTable();
         //TODO copy file to internal loation
-        File internalImageStorage = AppBase.getAppContext().getDir(BG_THEME_IMAGES_FOLDER_NAME, Context.MODE_PRIVATE);
+        File internalImageStorage = AppBase.getAppContext().getDir(BG_THEME_IMAGES_FOLDER_NAME, MODE_PRIVATE);
         if (!internalImageStorage.exists()) {
             internalImageStorage.mkdir();
         }
@@ -88,9 +88,9 @@ public class BackgroundThemeProviderImpl implements BackgroundThemeProvider {
             out.flush();
             out.close();
         } catch (FileNotFoundException fnfe1) {
-            Log.e("tag", fnfe1.getMessage());
+            LockLogger.e("tag", fnfe1.getMessage());
         } catch (Exception e) {
-            Log.e("tag", e.getMessage());
+            LockLogger.e("tag", e.getMessage());
         }
     }
 
@@ -100,9 +100,9 @@ public class BackgroundThemeProviderImpl implements BackgroundThemeProvider {
 
     @Override
     public void setBackgroundTheme(BackgroundTheme backgroundTheme) {
-        settings.setLong(LockItSettings.BG_THEME_ID, backgroundTheme.getId());
-        LocalBroadcastManager.getInstance(AppBase.getAppContext()).sendBroadcast(
-                new Intent(AppLockService.ACTION_CHANGE_LOCK_BG));
+        settings.setLong(BG_THEME_ID, backgroundTheme.getId());
+//        LocalBroadcastManager.getInstance(AppBase.getAppContext()).sendBroadcast(
+//                new Intent(AppLockService.ACTION_CHANGE_LOCK_BG));
     }
 
     @Override

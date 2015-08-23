@@ -1,0 +1,36 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    tools:context="com.appsforbb.basic.applock.settings.UserProfileActivity">
+
+
+    <RelativeLayout
+        android:layout_width="@dimen/dialog_fixed_width_minor"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:layout_centerInParent="true">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary" />
+
+        <ListView
+            android:id="@+id/user_profile_listview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/toolbar" />
+
+    </RelativeLayout>
+
+    <!--<item name="windowFixedWidthMajor">@dimen/dialog_fixed_width_major</item>-->
+    <!--<item name="windowFixedWidthMinor">@dimen/dialog_fixed_width_minor</item>-->
+    <!--<item name="windowFixedHeightMajor">@dimen/dialog_fixed_height_major</item>-->
+    <!--<item name="windowFixedHeightMinor">@dimen/dialog_fixed_height_minor</item>-->
+
+
+
+</RelativeLayout>

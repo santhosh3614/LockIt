@@ -3,21 +3,24 @@ package com.smartminds.lockit.locklib.services;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.appsforbb.common.appbase.AppBase;
 import com.smartminds.lockit.locklib.AppLockLib;
+import com.smartminds.lockit.locklib.others.LockLogger;
 
-public class BootStartUpReceiver extends BroadcastReceiver{
+import static com.smartminds.lockit.locklib.services.BasicLockService.setRepeatingAlarm;
 
-    private static final String TAG=BootStartUpReceiver.class.getSimpleName();
+public class BootStartUpReceiver extends BroadcastReceiver {
+
+    private static final String TAG = BootStartUpReceiver.class.getSimpleName();
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(BootStartUpReceiver.class.getSimpleName(), "onReceive()...called");
+        LockLogger.d(TAG, "onReceive()...called");
         intent = new Intent(AppBase.getAppContext(), AppLockService.class);
         context.startService(intent);
         if (AppLockLib.getInstance().isEnabled()) {
-            AppLockService.setRepeatingAlarm(context);
+            setRepeatingAlarm(context);
         }
     }
 }

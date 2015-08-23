@@ -4,8 +4,22 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.appsforbb.common.sqlitelib.ColumnTypes;
+import com.appsforbb.common.sqlitelib.ColumnTypes.BooleanColumn;
 import com.appsforbb.common.sqlitelib.ObjectTable;
 import com.smartminds.lockit.locklib.BasicLockInfo;
+import com.smartminds.lockit.locklib.db.AdvancedAppLock.AdvancedLocks;
+import com.smartminds.lockit.locklib.db.AdvancedAppLock.AdvancedLocks.AdvancedAppBasicLock;
+import com.smartminds.lockit.locklib.db.AdvancedAppLock.AdvancedSwitchLocks;
+import com.smartminds.lockit.locklib.db.AdvancedAppLock.AdvancedSwitchLocks.AdvancedAppSwitchBasicLock;
+import com.smartminds.lockit.locklib.db.AdvancedAppLock.AdvancedSwitchLocks.Type;
+
+import java.util.EnumMap;
+
+import static com.smartminds.lockit.locklib.db.AdvancedAppLock.AdvancedLocks.Type.INCOMMINGCALL;
+import static com.smartminds.lockit.locklib.db.AdvancedAppLock.AdvancedLocks.Type.RECENTASK;
+import static com.smartminds.lockit.locklib.db.AdvancedAppLock.AdvancedLocks.Type.TASKMANAGER;
+import static com.smartminds.lockit.locklib.db.AdvancedAppLock.AdvancedLocks.Type.UN_INSTALL;
+import static com.smartminds.lockit.locklib.db.AdvancedAppLock.AdvancedSwitchLocks.Type.*;
 
 /**
  * Created by santhosh on 14/6/15.ab
@@ -15,24 +29,46 @@ public class AdvancedLockAppInfoTable extends ObjectTable<AdvancedAppLock> {
     static final String TABLE_NAME = AdvancedLockAppInfoTable.class.getSimpleName();
 
     private ColumnTypes.LongColumn PROFILE_ID = new ColumnTypes.LongColumn("profile_id");
+
+    private EnumMap<AdvancedLocks.Type, BooleanColumn> advancedAppEnum =
+            new EnumMap<AdvancedLocks.Type, BooleanColumn>
+                    (AdvancedLocks.Type.class);
+    private BooleanColumn LOCK_INSTALL_UNINSTALL = new BooleanColumn("in_uninstall");
+    private BooleanColumn LOCK_RECENT_TASK = new BooleanColumn("recent_task");
+    private BooleanColumn LOCK_TASK_MANGER = new BooleanColumn("task_manager");
+    private BooleanColumn LOCK_INCOMMING_CALLS = new BooleanColumn("incoming_calls");
+
     //Advanced lock
-    private ColumnTypes.BooleanColumn LOCK_INSTALL_UNINSTALL = new ColumnTypes.BooleanColumn("in_uninstall");
-    private ColumnTypes.BooleanColumn LOCK_RECENT_TASK = new ColumnTypes.BooleanColumn("recent_task");
-    private ColumnTypes.BooleanColumn LOCK_TASK_MANGER = new ColumnTypes.BooleanColumn("task_manager");
-    private ColumnTypes.BooleanColumn LOCK_INCOMMING_CALLS = new ColumnTypes.BooleanColumn("incoming_calls");
 
     //switch lock
-    private ColumnTypes.BooleanColumn LOCK_WIFI = new ColumnTypes.BooleanColumn("wifi");
-    private ColumnTypes.BooleanColumn LOCK_BLUETOOTH = new ColumnTypes.BooleanColumn("bluetooth");
-    private ColumnTypes.BooleanColumn LOCK_MOBILEDATA = new ColumnTypes.BooleanColumn("mobile_data");
-    private ColumnTypes.BooleanColumn LOCK_AUTOSYNC = new ColumnTypes.BooleanColumn("auto_sync");
+    private EnumMap<Type, BooleanColumn> advancedAppSwitchEnum =
+            new EnumMap<Type, BooleanColumn>
+                    (Type.class);
+    private BooleanColumn LOCK_WIFI = new BooleanColumn("wifi");
+    private BooleanColumn LOCK_BLUETOOTH = new BooleanColumn("bluetooth");
+    private BooleanColumn LOCK_MOBILEDATA = new BooleanColumn("mobile_data");
+    private BooleanColumn LOCK_AUTOSYNC = new BooleanColumn("auto_sync");
+
 
     protected AdvancedLockAppInfoTable() {
         super(TABLE_NAME);
-        addColumns(PROFILE_ID, LOCK_INSTALL_UNINSTALL, LOCK_RECENT_TASK, LOCK_TASK_MANGER,
-                LOCK_INCOMMING_CALLS, LOCK_WIFI, LOCK_BLUETOOTH, LOCK_MOBILEDATA, LOCK_AUTOSYNC);
+        addColumns(PROFILE_ID,
+                LOCK_INSTALL_UNINSTALL, LOCK_RECENT_TASK, LOCK_TASK_MANGER,LOCK_INCOMMING_CALLS,
+                LOCK_WIFI, LOCK_BLUETOOTH, LOCK_MOBILEDATA, LOCK_AUTOSYNC);
         addRawConstraint("FOREIGN KEY (" + PROFILE_ID + ") REFERENCES '" +
                 UserProfileTable.TABLE_NAME + "'(rowid) ON DELETE CASCADE");
+
+        advancedAppEnum.put(INCOMMINGCALL, LOCK_INCOMMING_CALLS);
+        advancedAppEnum.put(TASKMANAGER, LOCK_TASK_MANGER);
+        advancedAppEnum.put(RECENTASK, LOCK_RECENT_TASK);
+        advancedAppEnum.put(UN_INSTALL, LOCK_INSTALL_UNINSTALL);
+
+        advancedAppSwitchEnum.put(WIFI, LOCK_WIFI);
+        advancedAppSwitchEnum.put(BLUETOOTH, LOCK_BLUETOOTH);
+        advancedAppSwitchEnum.put(MOBILEDATA, LOCK_MOBILEDATA);
+        advancedAppSwitchEnum.put(AUTOSYNC, LOCK_AUTOSYNC);
+
+
     }
 
     @Override
@@ -45,14 +81,14 @@ public class AdvancedLockAppInfoTable extends ObjectTable<AdvancedAppLock> {
         boolean isTaskMangerLocked = LOCK_TASK_MANGER.getValue(cursor);
         boolean isIncommingLocked = LOCK_INCOMMING_CALLS.getValue(cursor);
 
-        AdvancedAppLock.AdvancedLocks advancedLocks = new AdvancedAppLock.AdvancedLocks(userProfileId, isUnInstallLocked,
+        AdvancedLocks advancedLocks = new AdvancedLocks(userProfileId, isUnInstallLocked,
                 isRecentTaskLocked, isTaskMangerLocked, isIncommingLocked);
 
         boolean isWifiLocked = LOCK_WIFI.getValue(cursor);
         boolean isBluetoothLocked = LOCK_BLUETOOTH.getValue(cursor);
         boolean isMobileDataLocked = LOCK_MOBILEDATA.getValue(cursor);
         boolean isAutoSyncLocked = LOCK_AUTOSYNC.getValue(cursor);
-        AdvancedAppLock.AdvancedSwitchLocks advancedSwitchLocks = new AdvancedAppLock.AdvancedSwitchLocks(isWifiLocked, isBluetoothLocked,
+        AdvancedSwitchLocks advancedSwitchLocks = new AdvancedSwitchLocks(isWifiLocked, isBluetoothLocked,
                 isMobileDataLocked, isAutoSyncLocked);
         AdvancedAppLock advancedAppLock = new AdvancedAppLock(userProfileId, advancedLocks, advancedSwitchLocks);
         return advancedAppLock;
@@ -62,60 +98,48 @@ public class AdvancedLockAppInfoTable extends ObjectTable<AdvancedAppLock> {
     protected void fillRecordRow(SQLiteRow sqLiteRow, AdvancedAppLock advancedAppLock) {
         sqLiteRow.setColumnValue(PROFILE_ID, advancedAppLock.getUserProfileId());
         //advanced locks
-        AdvancedAppLock.AdvancedLocks advancedLocks = advancedAppLock.getAdvancedLock();
-        sqLiteRow.setColumnValue(LOCK_INSTALL_UNINSTALL, isLocked(advancedLocks, AdvancedAppLock.Type.UN_INSTALL));
-        sqLiteRow.setColumnValue(LOCK_RECENT_TASK, isLocked(advancedLocks, AdvancedAppLock.Type.RECENTASK));
-        sqLiteRow.setColumnValue(LOCK_TASK_MANGER, isLocked(advancedLocks, AdvancedAppLock.Type.TASKMANAGER));
-        sqLiteRow.setColumnValue(LOCK_INCOMMING_CALLS, isLocked(advancedLocks, AdvancedAppLock.Type.INCOMMINGCALL));
-
-        //switch locks
-        AdvancedAppLock.AdvancedSwitchLocks advancedSwitchLocks = advancedAppLock.getAdvancedSwitchLocks();
-        sqLiteRow.setColumnValue(LOCK_WIFI, isLocked(advancedSwitchLocks, AdvancedAppLock.Type.WIFI));
-        sqLiteRow.setColumnValue(LOCK_BLUETOOTH, isLocked(advancedSwitchLocks, AdvancedAppLock.Type.BLUETOOTH));
-        sqLiteRow.setColumnValue(LOCK_MOBILEDATA, isLocked(advancedSwitchLocks, AdvancedAppLock.Type.MOBILEDATA));
-        sqLiteRow.setColumnValue(LOCK_AUTOSYNC, isLocked(advancedSwitchLocks, AdvancedAppLock.Type.AUTOSYNC));
+        AdvancedLocks advancedLocks = advancedAppLock.getAdvancedLock();
+        for (AdvancedLocks.Type type : AdvancedLocks.Type.values()) {
+            BasicLockInfo basicLockInfo = advancedLocks.getBasicLockInfo(type);
+            BooleanColumn booleanColumn = advancedAppEnum.get(type);
+            System.out.println("Type...."+type+" Col:"+booleanColumn+" BasicLock:"+basicLockInfo);
+            if (booleanColumn != null) {
+                sqLiteRow.setColumnValue(booleanColumn, basicLockInfo.isLocked());
+            }
+        }
+        //advancedswitch locks
+        AdvancedSwitchLocks advancedSwitchLocks = advancedAppLock.getAdvancedSwitchLocks();
+        for (Type type : values()) {
+            BasicLockInfo basicLockInfo = advancedSwitchLocks.getBasicLockInfo(type);
+            BooleanColumn booleanColumn = advancedAppSwitchEnum.get(type);
+            if (basicLockInfo != null && booleanColumn != null) {
+                sqLiteRow.setColumnValue(booleanColumn, basicLockInfo.isLocked());
+            }
+        }
     }
 
-    private boolean isLocked(AdvancedAppLock.AdvancedLocks advancedLocks, AdvancedAppLock.Type type) {
-        BasicLockInfo basicLockInfo = advancedLocks.getBasicLockInfo(type);
-        return basicLockInfo != null ? basicLockInfo.isLocked() : false;
-    }
-
-    private boolean isLocked(AdvancedAppLock.AdvancedSwitchLocks advancedLocks, AdvancedAppLock.Type type) {
-        BasicLockInfo basicLockInfo = advancedLocks.getBasicLockInfo(AdvancedAppLock.Type.UN_INSTALL);
-        return basicLockInfo != null ? basicLockInfo.isLocked() : false;
-    }
-
-    AdvancedAppLock getAdvancedAppLock(long userProfileId) {
+    public AdvancedAppLock getAdvancedAppLock(long userProfileId) {
         return getSingleRecord(WHERE(PROFILE_ID + "=?", String.valueOf(userProfileId)));
     }
 
-    public void updateBasicAppLock(long userProfileId,boolean isLocked,AdvancedAppLock.Type type){
-        ContentValues contentValues=new ContentValues();
-        if(type== AdvancedAppLock.Type.WIFI){
-            contentValues.put(LOCK_WIFI.getName(),isLocked);
-        }else if(type== AdvancedAppLock.Type.BLUETOOTH){
-            contentValues.put(LOCK_BLUETOOTH.getName(),isLocked);
-        }else if(type== AdvancedAppLock.Type.MOBILEDATA){
-            contentValues.put(LOCK_MOBILEDATA.getName(),isLocked);
-        }else if(type== AdvancedAppLock.Type.AUTOSYNC){
-            contentValues.put(LOCK_AUTOSYNC.getName(),isLocked);
-        }else if(type== AdvancedAppLock.Type.INCOMMINGCALL){
-            contentValues.put(LOCK_INCOMMING_CALLS.getName(),isLocked);
-        }else if(type== AdvancedAppLock.Type.RECENTASK){
-            contentValues.put(LOCK_RECENT_TASK.getName(),isLocked);
-        }else if(type== AdvancedAppLock.Type.TASKMANAGER){
-            contentValues.put(LOCK_TASK_MANGER.getName(),isLocked);
-        }else if(type== AdvancedAppLock.Type.UN_INSTALL){
-            contentValues.put(LOCK_INSTALL_UNINSTALL.getName(),isLocked);
+    public void updateBasicAppLock(long userProfileId, boolean isLocked, BasicLockInfo basicLockInfo) {
+        ContentValues contentValues = new ContentValues();
+        if (basicLockInfo instanceof AdvancedAppBasicLock) {
+            AdvancedAppBasicLock advancedAppBasicLock =
+                    (AdvancedAppBasicLock) basicLockInfo;
+            contentValues.put(advancedAppEnum.get(advancedAppBasicLock.getType()).toString(), advancedAppBasicLock.isLocked());
+        } else if (basicLockInfo instanceof AdvancedAppSwitchBasicLock) {
+            AdvancedAppSwitchBasicLock advancedAppSwitchBasicLock =
+                    (AdvancedAppSwitchBasicLock) basicLockInfo;
+            contentValues.put(advancedAppSwitchEnum.get(advancedAppSwitchBasicLock.getType()).toString(),
+                    advancedAppSwitchBasicLock.isLocked());
         }
-        update(contentValues,WHERE(PROFILE_ID+"=?",userProfileId));
+        update(contentValues, WHERE(PROFILE_ID + "=?", userProfileId));
     }
 
     long addAdvancedAppLock(AdvancedAppLock advancedAppLock) {
         return super.insertNewRecord(advancedAppLock);
     }
-
 
     public void deleteLockAppInfo(AdvancedAppLock advancedAppLock) {
         delete(WHERE(PROFILE_ID + " = ?", String.valueOf(advancedAppLock.getUserProfileId())));

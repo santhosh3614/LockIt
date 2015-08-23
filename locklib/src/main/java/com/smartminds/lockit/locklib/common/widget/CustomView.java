@@ -8,10 +8,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import com.appsforbb.common.annotations.NonNull;
 
-public abstract class CustomView extends View {
+public abstract class CustomView extends FrameLayout {
     private boolean flag;
 
     public CustomView(Context context) {

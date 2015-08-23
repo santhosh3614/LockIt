@@ -10,13 +10,13 @@ import com.smartminds.lockit.locklib.others.Weak;
 public class LaunchableAppInfo {
 
     private static final PackageManager pm = AppBase.getAppContext().getPackageManager();
+    private static final String[] systemPkgs = new String[]{"com.android",};
 
     private ActivityInfo info;
     private String packageName;
     private String activityName;
     private String label;
     private Weak<Drawable> icon;
-    private boolean isSystemApp;
 
     LaunchableAppInfo(final ActivityInfo info) {
         this.info = info;
@@ -60,7 +60,10 @@ public class LaunchableAppInfo {
     }
 
     public boolean isSystemApp() {
-        return packageName.equals("com.android");
+        for (int i = 0; i < systemPkgs.length; i++) {
+            return packageName.startsWith("com.android");
+        }
+        return false;
     }
 
     @Override

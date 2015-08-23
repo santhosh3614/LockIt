@@ -44,15 +44,16 @@ class UserProfileTable extends ObjectTable<LockItProfile> {
         deleteByRowId(profileId);
     }
 
-    long addProfile(String profileName) {
+    long addDefaultProfile(String profileName) {
         long profileId = insertOnDuplicateKeyReplace(new LockItProfile(-1, profileName));
         if (profileId != -1) {
             AdvancedAppLock.AdvancedLocks advancedLocks = new AdvancedAppLock.AdvancedLocks(profileId,
-                    AdvancedAppLock.DEFAULT_LOCK_UNINSTALL, AdvancedAppLock.DEFAULT_LOCK_RECENTTASK,
-                    AdvancedAppLock.DEFAULT_LOCK_TASKMANGER, AdvancedAppLock.DEFAULT_LOCK_INCOMMING);
+                    AdvancedAppLock.AdvancedLocks.DEFAULT_LOCK_UNINSTALL, AdvancedAppLock.AdvancedLocks.DEFAULT_LOCK_RECENTTASK,
+                    AdvancedAppLock.AdvancedLocks.DEFAULT_LOCK_TASKMANGER, AdvancedAppLock.AdvancedLocks.DEFAULT_LOCK_INCOMMING);
+
             AdvancedAppLock.AdvancedSwitchLocks advancedSwitchLocks = new AdvancedAppLock.AdvancedSwitchLocks(
-                    AdvancedAppLock.DEFAULT_LOCK_WIFI, AdvancedAppLock.DEFAULT_LOCK_BLUETOOTH,
-                    AdvancedAppLock.DEFAULT_LOCK_MOBILDATA, AdvancedAppLock.DEFAULT_LOCK_AUTOSYNC);
+                    AdvancedAppLock.AdvancedSwitchLocks.DEFAULT_LOCK_WIFI, AdvancedAppLock.AdvancedSwitchLocks.DEFAULT_LOCK_BLUETOOTH,
+                    AdvancedAppLock.AdvancedSwitchLocks.DEFAULT_LOCK_MOBILDATA, AdvancedAppLock.AdvancedSwitchLocks.DEFAULT_LOCK_AUTOSYNC);
             AdvancedAppLock advancedAppLock = new AdvancedAppLock(profileId, advancedLocks, advancedSwitchLocks);
             Db.getInstance().getAdvancedLockAppInfoTable().addAdvancedAppLock(advancedAppLock);
         }
@@ -64,6 +65,5 @@ class UserProfileTable extends ObjectTable<LockItProfile> {
         contentValues.put(PROFILE_NAME.toString(), userProfile.getProfileName());
         updateByRowId(contentValues, userProfile.getId());
     }
-
 
 }

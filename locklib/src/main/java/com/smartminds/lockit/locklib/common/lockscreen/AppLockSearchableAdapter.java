@@ -15,4 +15,12 @@ public interface AppLockSearchableAdapter<T> extends ListAdapter,SpinnerAdapter,
 
     public abstract int getViewTypeCount();
 
+    public void setSortOrder(Filters.SortOrder sortOrder);
+
+    public Filters.SortOrder getSortOrder();
+
+    public Filters.Filter getAppLockFilter();
+
+    public void setAppLockFilter(Filters.Filter filter);
+
 }

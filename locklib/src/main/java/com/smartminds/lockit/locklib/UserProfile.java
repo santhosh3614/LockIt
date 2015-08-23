@@ -1,5 +1,7 @@
 package com.smartminds.lockit.locklib;
 
-public interface UserProfile {
+import android.os.Parcelable;
+
+public interface UserProfile extends Parcelable{
     String getProfileName();
 }

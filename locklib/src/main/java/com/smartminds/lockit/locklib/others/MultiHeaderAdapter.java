@@ -98,7 +98,6 @@ public abstract class MultiHeaderAdapter<T> extends BaseAdapter {
 
     @Override
     public final View getView(int position, View convertView, ViewGroup parent) {
-        System.out.println("getItemType:"+getItemViewType(position)+" Position:"+ position);
         if (getItemViewType(position) == HEADER_IDX) {
             int headerId = (int) getItemId(position);
             if (convertView == null) {

@@ -9,14 +9,13 @@ import android.util.Log;
 
 import com.appsforbb.common.annotations.NonNull;
 
-public final class NumLockView extends LockViewBase {
+public class NumLockView extends LockViewBase {
     public interface OnDrawNumLockView {
         void onDrawNumLockView(Canvas canvas, String input);
     }
 
     private static final String TAG = "NumLock";
     private int numDigits = 4;
-
     private String input = "";
     private OnDrawNumLockView delegate;
 

@@ -35,7 +35,7 @@ public abstract class LockViewBase extends CustomView implements LockView {
     }
 
     @Override
-    public final void cancelInput() {
+    public void cancelInput() {
         switch (mode) {
             case MODE_CREATE_PASS:
                 createPassCallBack.onCreatePassCancel();
@@ -52,7 +52,7 @@ public abstract class LockViewBase extends CustomView implements LockView {
     }
 
     @Override
-    public final void validateInput() {
+    public void validateInput() {
         LockData inputData = getInputData();
         switch (mode) {
             case MODE_CREATE_PASS:
