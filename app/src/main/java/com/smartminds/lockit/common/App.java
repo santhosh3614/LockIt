@@ -17,6 +17,8 @@ public class App extends AppBase {
     public void onCreate() {
         super.onCreate();
         initImageLoader(this);
+
+        
     }
 
     public static void initImageLoader(Context context) {
