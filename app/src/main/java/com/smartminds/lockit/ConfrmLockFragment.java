@@ -1,6 +1,7 @@
 package com.smartminds.lockit;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.smartminds.lockit.others.BaseFragment;
 public class ConfrmLockFragment extends BaseFragment {
 
     public static ConfrmLockFragment newInstance() {
+        Log.d("hHHHH","Testing.....");
         return new ConfrmLockFragment();
     }
 
